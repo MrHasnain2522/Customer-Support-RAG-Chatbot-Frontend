@@ -4,14 +4,16 @@ import MessageBubble from './MessageBubble';
 import ProductCard from './ProductCard';
 import ProductDetailModal from './ProductDetailModal';
 import { sendMessage } from '../services/api';
+import VoiceInput from './VoiceInput';
 
-const ChatInterface = () => {
+const ChatInterface = ({ isWidget = false }) => {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [conversationId, setConversationId] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [voiceError, setVoiceError] = useState(null);
   const messagesEndRef = useRef(null);
   
   const userId = 'user_' + Math.random().toString(36).substr(2, 9);
@@ -32,7 +34,7 @@ const ChatInterface = () => {
       colors: ['Black', 'Charcoal', 'Black with Gold', 'Black with Silver'],
       sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
       description: 'Elegant black lawn with silver thread embroidery',
-      image: '/images/products/black_sute.png',
+      image: "black_sute.png",
       longDescription: 'Experience timeless elegance with our Black Sophistication collection. Featuring premium black lawn fabric adorned with intricate silver thread embroidery, this ensemble is perfect for formal events and special occasions. The sophisticated design ensures you make a lasting impression.'
     },
     {
@@ -122,6 +124,109 @@ const ChatInterface = () => {
     }
   };
 
+  // ========================================
+  // VOICE INPUT HANDLERS (ENHANCED DEBUG)
+  // ========================================
+  const handleVoiceTranscript = (text) => {
+    console.log('═══════════════════════════════════════');
+    console.log('🎯 CHATINTERFACE: handleVoiceTranscript called');
+    console.log('📝 Received text:', text);
+    console.log('📊 Text type:', typeof text);
+    console.log('📏 Text length:', text?.length);
+    console.log('═══════════════════════════════════════');
+    
+    if (!text || typeof text !== 'string') {
+      console.error('❌ Invalid text received:', text);
+      return;
+    }
+    
+    console.log('✅ Setting input value to:', text);
+    setInputValue(text);
+    setVoiceError(null);
+    
+    // Verify state was updated
+    setTimeout(() => {
+      console.log('✅ Input value after setState:', text);
+    }, 100);
+  };
+
+  const handleVoiceError = (error) => {
+    console.log('═══════════════════════════════════════');
+    console.log('❌ CHATINTERFACE: handleVoiceError called');
+    console.log('Error:', error);
+    console.log('═══════════════════════════════════════');
+    
+    setVoiceError(error);
+    
+    // Auto-clear error after 3 seconds
+    setTimeout(() => setVoiceError(null), 3000);
+  };
+
+  // Debug: Log when inputValue changes
+  useEffect(() => {
+    console.log('🔄 inputValue changed to:', inputValue);
+  }, [inputValue]);
+
+  // ========================================
+  // WIDGET MODE - Compact layout without products sidebar
+  // ========================================
+  if (isWidget) {
+    return (
+      <div className="chat-widget-interface">
+        <div className="messages-container widget-messages">
+          {messages.map((message, index) => (
+            <MessageBubble
+              key={index}
+              message={message}
+              isUser={message.isUser}
+            />
+          ))}
+          {isLoading && (
+            <div className="loading-indicator">
+              <FaSpinner className="spinner" />
+              <span>AI is thinking...</span>
+            </div>
+          )}
+          <div ref={messagesEndRef} />
+        </div>
+
+        <div className="input-container widget-input">
+          <VoiceInput 
+            onTranscript={handleVoiceTranscript}
+            onError={handleVoiceError}
+          />
+          <input
+            type="text"
+            className="message-input"
+            placeholder="Ask about sizes, colors, prices..."
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyPress={handleKeyPress}
+            disabled={isLoading}
+          />
+          <button
+            className="send-button"
+            onClick={handleSendMessage}
+            disabled={isLoading || !inputValue.trim()}
+          >
+            {isLoading ? (
+              <FaSpinner className="spinner" />
+            ) : (
+              <FaPaperPlane />
+            )}
+          </button>
+          
+          {voiceError && (
+            <div className="voice-error-message">{voiceError}</div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // ========================================
+  // FULL PAGE MODE - With products sidebar
+  // ========================================
   return (
     <>
       <div className="chat-interface">
@@ -162,6 +267,10 @@ const ChatInterface = () => {
           </div>
 
           <div className="input-container">
+            <VoiceInput 
+              onTranscript={handleVoiceTranscript}
+              onError={handleVoiceError}
+            />
             <input
               type="text"
               className="message-input"
@@ -182,6 +291,10 @@ const ChatInterface = () => {
                 <FaPaperPlane />
               )}
             </button>
+            
+            {voiceError && (
+              <div className="voice-error-message">{voiceError}</div>
+            )}
           </div>
         </div>
       </div>

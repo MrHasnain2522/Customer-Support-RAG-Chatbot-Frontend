@@ -1,5 +1,6 @@
 import React from 'react';
-import { FaTag, FaPalette, FaRuler, FaExpand } from 'react-icons/fa';
+// eslint-disable-next-line no-unused-vars
+import { FaTag, FaPalette, FaRuler, FaExpand, FaShoppingCart } from 'react-icons/fa';
 
 const ProductCard = ({ product, onCardClick }) => {
   const { name, price, colors, sizes, description, image } = product;
@@ -8,90 +9,136 @@ const ProductCard = ({ product, onCardClick }) => {
     'Pink': '#FFB6C1',
     'Rose Pink': '#FF69B4',
     'Coral Pink': '#F88379',
+    'Hot Pink': '#FF1493',
     'Black': '#000000',
     'Charcoal': '#36454F',
+    'Black with Gold': '#000000',
+    'Black with Silver': '#000000',
     'White': '#FFFFFF',
     'Sky Blue': '#87CEEB',
     'Powder Blue': '#B0E0E6',
     'Turquoise': '#40E0D0',
+    'Navy Blue': '#000080',
     'Blue': '#3498DB',
-    'Green': '#90EE90',
-    'Yellow': '#FFD700',
-    'Red': '#FF6B6B',
-    'Purple': '#DDA0DD',
-    'Grey': '#D3D3D3',
-    'Peach': '#FFDAB9',
   };
 
   return (
-    <div className="product-card" onClick={() => onCardClick(product)}>
-      <div className="product-image">
-        {image ? (
-          <img 
-            src={image} 
-            alt={name} 
-            className="product-img"
-            onError={(e) => {
-              e.target.style.display = 'none';
-              e.target.parentElement.querySelector('.image-placeholder').style.display = 'flex';
-            }}
-          />
-        ) : null}
-        <div className="image-placeholder" style={{ display: image ? 'none' : 'flex' }}>
-          <div className="placeholder-icon">👗</div>
-          <div className="placeholder-text">{name}</div>
-        </div>
-        <div className="product-badge">New</div>
-        <div className="expand-icon">
-          <FaExpand />
-        </div>
-      </div>
-      
-      <div className="product-details">
-        <h3 className="product-name">{name}</h3>
-        <p className="product-description">{description}</p>
-        
-        <div className="product-info">
-          <div className="info-item">
-            <FaTag className="info-icon" />
-            <span className="product-price">PKR {price.toLocaleString()}</span>
+    <div className="product-card-wrapper" onClick={() => onCardClick(product)}>
+      {/* Product Card */}
+      <div className="product-card-ecommerce">
+        {/* Image Section */}
+        <div className="product-card-image-section">
+          {image ? (
+            <>
+              <img 
+                src={image} 
+                alt={name} 
+                className="product-card-img"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  const placeholder = e.target.parentElement.querySelector('.product-card-placeholder');
+                  if (placeholder) {
+                    placeholder.style.display = 'flex';
+                  }
+                }}
+              />
+              <div className="product-card-placeholder" style={{ display: 'none' }}>
+                <div className="placeholder-icon-large">👗</div>
+                <div className="placeholder-name">{name}</div>
+              </div>
+            </>
+          ) : (
+            <div className="product-card-placeholder">
+              <div className="placeholder-icon-large">👗</div>
+              <div className="placeholder-name">{name}</div>
+            </div>
+          )}
+          
+          {/* Badges */}
+          <div className="product-card-badges">
+            <span className="badge-new">New</span>
+            <span className="badge-trending">🔥 Trending</span>
           </div>
           
-          <div className="info-item">
-            <FaPalette className="info-icon" />
-            <div className="color-options">
-              {colors.slice(0, 4).map((color, index) => (
+          {/* Quick View Overlay */}
+          <div className="product-card-overlay">
+            <button className="quick-view-btn">
+              <FaExpand /> Quick View
+            </button>
+          </div>
+        </div>
+        
+        {/* Details Section */}
+        <div className="product-card-details-section">
+          <h3 className="product-card-title">{name}</h3>
+          <p className="product-card-desc">{description}</p>
+          
+          {/* Price */}
+          <div className="product-card-price-section">
+            <div className="price-main">PKR {price.toLocaleString()}</div>
+            <div className="price-original">PKR {(price * 1.2).toLocaleString()}</div>
+            <div className="price-discount">20% OFF</div>
+          </div>
+          
+          {/* Color Swatches */}
+          <div className="product-card-colors">
+            <div className="colors-label">
+              <FaPalette className="label-icon" />
+              <span>{colors.length} Colors</span>
+            </div>
+            <div className="colors-swatches">
+              {colors.slice(0, 5).map((color, index) => (
                 <div
                   key={index}
-                  className="color-dot"
+                  className="color-swatch"
                   style={{ 
                     backgroundColor: colorMap[color] || '#ccc',
-                    border: color === 'White' ? '1px solid #ddd' : 'none'
+                    border: color === 'White' || color.includes('Silver') ? '1px solid #ddd' : 'none'
                   }}
                   title={color}
                 />
               ))}
-              {colors.length > 4 && (
-                <span className="color-more">+{colors.length - 4}</span>
+              {colors.length > 5 && (
+                <span className="colors-more">+{colors.length - 5}</span>
               )}
             </div>
           </div>
           
-          <div className="info-item">
-            <FaRuler className="info-icon" />
-            <span className="product-sizes">{sizes.join(', ')}</span>
+          {/* Sizes */}
+          <div className="product-card-sizes">
+            <div className="sizes-label">
+              <FaRuler className="label-icon" />
+              <span>Available Sizes</span>
+            </div>
+            <div className="sizes-list">
+              {sizes.slice(0, 6).map((size, index) => (
+                <span key={index} className="size-tag">{size}</span>
+              ))}
+            </div>
+          </div>
+          
+          {/* Action Buttons */}
+          <div className="product-card-actions">
+            <button 
+              className="btn-view-details"
+              onClick={(e) => {
+                e.stopPropagation();
+                onCardClick(product);
+              }}
+            >
+              View Details
+            </button>
+            <button 
+              className="btn-add-cart"
+              onClick={(e) => {
+                e.stopPropagation();
+                window.location.href = 'tel:03201007448';
+              }}
+            >
+              <FaShoppingCart /> Order Now
+            </button>
           </div>
         </div>
-        
-        <button 
-          className="add-to-cart-btn"
-          onClick={(e) => {
-            e.stopPropagation();
-            window.location.href = 'tel:03201007448';
-          }}
-        >
-          Order Now - 0320-1007448
-        </button>
       </div>
     </div>
   );

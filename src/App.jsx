@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Navbar from './components/Navbar';
 import ChatWidget from './components/ChatWidget';
+import ProductDetailModal from './components/ProductDetailModal';
 import './App.css';
 
 function App() {
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   // Featured products data
   const featuredProducts = [
     {
@@ -11,26 +15,46 @@ function App() {
       name: 'Summer Lawn Collection',
       description: 'Lightweight & Elegant',
       price: 3800,
+      colors: ['Pink', 'Rose Pink', 'Coral Pink', 'Hot Pink'],
+      sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
       image: '/images/products/pink_lawn.png',
-      badge: 'New Arrival'
+      badge: 'New Arrival',
+      longDescription: 'Our Summer Lawn collection features exquisite floral embroidery on premium quality lawn fabric. Perfect for summer occasions, this piece combines traditional aesthetics with modern comfort. The breathable fabric ensures all-day comfort while the elegant design makes you stand out.'
     },
     {
       id: 2,
       name: 'Premium Silk',
       description: 'Luxury Collection',
-      price: 6500,
-      image: '/images/products/black_sute.png',
-      badge: 'Best Seller'
+      price: 4800,
+      colors: ['Black', 'Charcoal', 'Black with Gold', 'Black with Silver'],
+      sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
+      image: '/images/products/black.jpg',
+      badge: 'Best Seller',
+      longDescription: 'Experience timeless elegance with our Premium Silk collection. Featuring premium black fabric adorned with intricate embroidery, this ensemble is perfect for formal events and special occasions. The sophisticated design ensures you make a lasting impression.'
     },
     {
       id: 3,
       name: 'Embroidered Elegance',
       description: 'Exclusive Designs',
       price: 5200,
-      image: '/images/products/sky_blue.png',
-      badge: 'Trending'
+      colors: ['Sky Blue', 'Powder Blue', 'Turquoise', 'Navy Blue'],
+      sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
+      image: '/images/products/sky.jpg',
+      badge: 'Trending',
+      longDescription: 'Embrace serenity with our Embroidered Elegance collection. This stunning piece features cool blue tones with delicate thread work borders, creating a perfect balance between traditional craftsmanship and contemporary style. Ideal for daytime events and casual gatherings.'
     }
   ];
+
+  const handleProductClick = (product) => {
+    console.log('Product clicked:', product);
+    setSelectedProduct(product);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedProduct(null);
+  };
 
   return (
     <div className="App">
@@ -62,16 +86,14 @@ function App() {
               </div>
             </div>
 
-            {/* CTA Button */}
             <button 
               className="hero-cta-btn"
               onClick={() => {
-                // Scroll to chat or open chat widget
                 const chatBtn = document.querySelector('.chat-widget-button');
                 if (chatBtn) chatBtn.click();
               }}
             >
-              Start Shopping with US 🛍️
+              Start Shopping with AI 🛍️
             </button>
           </div>
         </div>
@@ -83,7 +105,11 @@ function App() {
 
           <div className="showcase-grid">
             {featuredProducts.map((product) => (
-              <div key={product.id} className="showcase-card">
+              <div 
+                key={product.id} 
+                className="showcase-card"
+                onClick={() => handleProductClick(product)}
+              >
                 {/* Product Image */}
                 <div className="showcase-image-wrapper">
                   <img
@@ -91,27 +117,22 @@ function App() {
                     alt={product.name}
                     className="showcase-image"
                     onError={(e) => {
-                      // Fallback if image fails to load
                       e.target.style.display = 'none';
                       e.target.nextElementSibling.style.display = 'flex';
                     }}
                   />
-                  {/* Fallback placeholder */}
                   <div className="showcase-placeholder" style={{ display: 'none' }}>
                     <div className="placeholder-icon">👗</div>
                     <p>{product.name}</p>
                   </div>
                   
-                  {/* Badge */}
                   <span className="showcase-badge">{product.badge}</span>
                   
-                  {/* Hover Overlay */}
                   <div className="showcase-overlay">
                     <button className="showcase-view-btn">View Details</button>
                   </div>
                 </div>
 
-                {/* Product Details */}
                 <div className="showcase-details">
                   <h3>{product.name}</h3>
                   <p>{product.description}</p>
@@ -119,7 +140,13 @@ function App() {
                     <span className="price">PKR {product.price.toLocaleString()}</span>
                     <span className="price-original">PKR {(product.price * 1.2).toLocaleString()}</span>
                   </div>
-                  <button className="showcase-order-btn">
+                  <button 
+                    className="showcase-order-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      window.location.href = 'tel:03201007448';
+                    }}
+                  >
                     Order Now
                   </button>
                 </div>
@@ -127,7 +154,6 @@ function App() {
             ))}
           </div>
 
-          {/* View All Button */}
           <div className="showcase-view-all">
             <button 
               className="view-all-btn"
@@ -173,7 +199,7 @@ function App() {
           </div>
         </section>
 
-        {/* Testimonials Section */}
+        {/* Testimonials */}
         <section className="testimonials-section">
           <h2>What Our Customers Say</h2>
           <div className="testimonials-grid">
@@ -212,7 +238,7 @@ function App() {
           </div>
         </section>
 
-        {/* Call to Action */}
+        {/* CTA */}
         <section className="cta-section">
           <div className="cta-content">
             <h2>Ready to Find Your Perfect Suit?</h2>
@@ -232,6 +258,13 @@ function App() {
 
       {/* Floating Chat Widget */}
       <ChatWidget />
+
+      {/* Product Detail Modal for Landing Page Products */}
+      <ProductDetailModal
+        product={selectedProduct}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+      />
     </div>
   );
 }
