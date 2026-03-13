@@ -34,7 +34,7 @@ const ChatInterface = ({ isWidget = false }) => {
       colors: ['Black', 'Charcoal', 'Black with Gold', 'Black with Silver'],
       sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
       description: 'Elegant black lawn with silver thread embroidery',
-      image: "black_sute.png",
+      image: '/images/products/black.jpg',
       longDescription: 'Experience timeless elegance with our Black Sophistication collection. Featuring premium black lawn fabric adorned with intricate silver thread embroidery, this ensemble is perfect for formal events and special occasions. The sophisticated design ensures you make a lasting impression.'
     },
     {
