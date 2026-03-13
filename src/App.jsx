@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Navbar from './components/Navbar';
 import ChatWidget from './components/ChatWidget';
 import ProductDetailModal from './components/ProductDetailModal';
-import './styles/App.css';
+import './App.css';
 
 function App() {
   const [selectedProduct, setSelectedProduct] = useState(null);
